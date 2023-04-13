@@ -14,8 +14,9 @@ created_element_info = []
 
 def updateCoordinates(event):
     global old_x, old_y
+    print("Called!!!!")
     old_x, old_y = event.x, event.y
-    print(event.state)
+    print(old_x,old_y)
 
 def addLine(event):
     global old_x, old_y
@@ -40,17 +41,19 @@ def exportAsImage():
 
 
 def createElms():
-    global shape
+    global shape, old_x,old_y
     if shape == "Rectangle":
         a = c.create_rectangle(old_x, old_y, x, y,activewidth=2)
     elif shape == "Oval":
+        print("Oval Called")
+        print(shape)
         a = c.create_oval(old_x, old_y, x, y,activewidth=2)
     elif shape == "Polygan":
         a = c.create_polygon(
             old_x, old_y, x, y, old_x, old_y,activewidth=2)
     elif shape == "Arc":
         a = c.create_arc(old_x, old_y, x, y,activewidth=2)
-    elif shape == "Pencil":
+    elif shape == "Line":
         a = c.create_line(old_x, old_y, x, y,
                                width=2,activewidth=2,
                                capstyle=ROUND, smooth=TRUE, splinesteps=3)
@@ -60,9 +63,10 @@ def createElms():
     return a
 
 def createLine(e=""):
-    global x, y, created, new 
+    global x, y, created, new , old_y,old_x
     # line_width
     # try:
+    print(old_y,old_x)
     if e != "Get":
         x = e.x
         y = e.y
@@ -148,6 +152,10 @@ button_frame.pack(side=RIGHT, padx=10, pady=10, fill=Y)
 c = Canvas(main_frame,bg = "white")
 c.pack(side=LEFT, fill=BOTH, expand=True)
 
+radiovalue = StringVar()
+radiovalue.set("Oval")
+shape = "Pencil"
+
 c.bind("<Button-1>", updateCoordinates)
 c.bind("<B1-Motion>", createLine)
 c.bind("<ButtonRelease-1>", saveDrawing)
@@ -169,6 +177,27 @@ clear_button.pack(side=TOP, padx=5, pady=10)
 export_button = Button(button_frame, text="Export as Image", command=exportAsImage)
 export_button.pack(side=TOP, padx=5, pady=10)
 
+options = [
+    "XY",
+    "YZ",
+    "ZX",
+]
+  
+# datatype of menu text
+clicked = StringVar()
+var = StringVar()
+  
+# initial menu text
+clicked.set( "XY" )
+  
+
+# Create Dropdown menu
+drop = OptionMenu( root , clicked , *options )
+drop.pack(side=TOP, padx=5,pady=10)
+pass_label = Label(root, text="Number of Drones", font = ('calibre',10,'normal'),)
+pass_label.pack()
+passw_entry=Entry(root, textvariable = var, font = ('calibre',10,'normal'),)
+passw_entry.pack()
 
 radiovalue = StringVar()
 radiovalue.set("Pencil")
