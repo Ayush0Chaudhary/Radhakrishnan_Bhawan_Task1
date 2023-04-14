@@ -200,7 +200,7 @@ passw_entry=Entry(root, textvariable = var, font = ('calibre',10,'normal'),)
 passw_entry.pack()
 
 radiovalue = StringVar()
-radiovalue.set("Pencil")
+radiovalue.set("Oval")
 
 geometry_shapes = ["Pencil","Line", "Rectangle", "Arc", "Oval"]
 
