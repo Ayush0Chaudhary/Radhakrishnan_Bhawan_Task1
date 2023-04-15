@@ -1,5 +1,12 @@
 # drone-ps
 
+## Installation
+Require python>=3.6
+'''
+pip install -r requirements.txt
+'''
+
+
 ## Executables
 To run as standalone application
 ## .app in macOS
