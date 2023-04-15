@@ -167,7 +167,10 @@ def generate_coordinates(path,total_num_of_vertices,plane='xy',filename=None,hyp
     cv2.imshow('orig', img)
     #object to be found should be white and background should be black.
     imggray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)                 #Converted to Grayscale
-    _,thresh = cv2.threshold(imggray,127,255,cv2.THRESH_BINARY_INV) 
+    if(imggray[0][0] == 255):
+        _,thresh = cv2.threshold(imggray,127,255,cv2.THRESH_BINARY_INV) 
+    else:
+         _,thresh = cv2.threshold(imggray,127,255,cv2.THRESH_BINARY) 
 
     #Closing required to omit noise contours. Fills any hole or broken part
     #Opening is not suitable as it would completely making the image disappear
