@@ -9,6 +9,7 @@ pip install -r requirements.txt
 <p align="center">
 <img src="gui.png" width="600"/>
  </p>
+ 
 **Number of drones** - Shall be provided as input
 
 
