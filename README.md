@@ -25,6 +25,10 @@ To run the program directly as a python script run the following command:(Execut
 python app.py
 ```
 
+## Outputs
+<img src="india.png" width="600"/>
+<img src="bat.png" width="600"/>
+
 ## Executables
 To run as standalone application
 ## .app in macOS
