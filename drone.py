@@ -6,11 +6,11 @@ import tkinter.messagebox as alert
 old_x, old_y = 0, 0
 pen_color = "black"
 bg_color = "white"
+number_of_drones = 80
+axis = "xy"
 created = []
 new = []
 created_element_info = []
-
-
 
 def updateCoordinates(event):
     global old_x, old_y
@@ -26,33 +26,34 @@ def addLine(event):
 def clearCanvas():
     c.delete("all")
 
-def exportAsImage():
-    filename = filedialog.asksaveasfilename(defaultextension='.png', filetypes=[('PNG', '*.png'), ('JPEG', '*.jpg'), ('GIF', '*.gif')], title="Save the image as...")
-    main_frame.update()
-    x = root.winfo_rootx() + main_frame.winfo_x()
-    y = root.winfo_rooty() + main_frame.winfo_y()
-    width = main_frame.winfo_width()
-    height = main_frame.winfo_height()
+#Works for whole frame
+# def exportAsImage():
+#     filename = filedialog.asksaveasfilename(defaultextension='.png', filetypes=[('PNG', '*.png'), ('JPEG', '*.jpg'), ('GIF', '*.gif')], title="Save the image as...")
+#     main_frame.update()
+#     x = root.winfo_rootx() + main_frame.winfo_x()
+#     y = root.winfo_rooty() + main_frame.winfo_y()
+#     width = main_frame.winfo_width()
+#     height = main_frame.winfo_height()
 
-    img = ImageGrab.grab(bbox=(x, y, x+width, y+height))
-    img.save(filename)
-    print("Image saved as '{filename}")
-    messagebox.showinfo("Export as image", f"Image exported successfully to '{filename}'")
+#     img = ImageGrab.grab(bbox=(x, y, x+width, y+height))
+#     img.save(filename)
+#     print("Image saved as '{filename}")
+#     messagebox.showinfo("Export as image", f"Image exported successfully to '{filename}'")
 
 
 def createElms():
     global shape, old_x,old_y
     if shape == "Rectangle":
-        a = c.create_rectangle(old_x, old_y, x, y,activewidth=2)
+        a = c.create_rectangle(old_x, old_y, x, y,activewidth=2,outline='black')
     elif shape == "Oval":
         print("Oval Called")
         print(shape)
-        a = c.create_oval(old_x, old_y, x, y,activewidth=2)
+        a = c.create_oval(old_x, old_y, x, y,activewidth=2,outline='black')
     elif shape == "Polygan":
         a = c.create_polygon(
-            old_x, old_y, x, y, old_x, old_y,activewidth=2)
+            old_x, old_y, x, y, old_x, old_y,activewidth=2,outline='black')
     elif shape == "Arc":
-        a = c.create_arc(old_x, old_y, x, y,activewidth=2)
+        a = c.create_arc(old_x, old_y, x, y,activewidth=2,outline='black')
     elif shape == "Line":
         a = c.create_line(old_x, old_y, x, y,
                                width=2,activewidth=2,
@@ -130,6 +131,48 @@ def captureMotion(e=""):
 #         img.save(filename)
 #         messagebox.showinfo("Export as Image", f"Image saved as '{filename}'")
 
+def exportkarImage():
+    filename = filedialog.asksaveasfilename(defaultextension='.png', filetypes=[('PNG', '*.png'), ('JPEG', '*.jpg'), ('GIF', '*.gif')], title="Save the image as...")
+    main_frame.update()
+    x = root.winfo_rootx() + main_frame.winfo_x()
+    y = root.winfo_rooty() + main_frame.winfo_y()
+    width = main_frame.winfo_width()
+    height = main_frame.winfo_height()
+
+    img = Image.new("RGBA", (width, height), bg_color)
+    draw = ImageDraw.Draw(img)
+
+    # draw the white canvas
+    draw.rectangle((0, 0, width, height), fill=bg_color)
+
+    # draw the lines
+    for item in c.find_all():
+        if c.type(item) == "line":
+            coords = c.coords(item)
+            draw.line([(coords[i], coords[i+1]) for i in range(0, len(coords), 2)], fill=pen_color, width=2)
+
+        elif c.type(item) == "rectangle":
+            coords = c.coords(item)
+            draw.rectangle(coords, outline=pen_color, width=2)
+
+        elif c.type(item) == "oval":
+            coords = c.coords(item)
+            draw.ellipse(coords, outline=pen_color, width=2)
+
+        elif c.type(item) == "arc":
+            coords = c.coords(item)
+            draw.arc(coords, outline=pen_color, width=2)
+
+        elif c.type(item) == "polygon":
+            coords = c.coords(item)
+            draw.polygon(coords, outline=pen_color, width=2)
+
+    img = img.crop((x, y, x+width, y+height))
+    img.save(filename)
+    print(f"Image saved as '{filename}")
+    messagebox.showinfo("Export as image", f"Image exported successfully to '{filename}'")
+
+
 #Root Create + Setup
 root = Tk()
 root.title("Drawing Pad")
@@ -151,6 +194,7 @@ button_frame.pack(side=RIGHT, padx=10, pady=10, fill=Y)
 #Canvas Create + Setup
 c = Canvas(main_frame,bg = "white")
 c.pack(side=LEFT, fill=BOTH, expand=True)
+c.itemconfig(c.find_all(), tags=("bg",))
 
 radiovalue = StringVar()
 radiovalue.set("Oval")
@@ -174,7 +218,7 @@ clear_button = Button(button_frame, text="Clear Button", command=clearCanvas)
 clear_button.pack(side=TOP, padx=5, pady=10)
 
 #export as image button
-export_button = Button(button_frame, text="Export as Image", command=exportAsImage)
+export_button = Button(button_frame, text="Export as Image", command=exportkarImage)
 export_button.pack(side=TOP, padx=5, pady=10)
 
 options = [
@@ -194,9 +238,10 @@ clicked.set( "XY" )
 # Create Dropdown menu
 drop = OptionMenu( root , clicked , *options )
 drop.pack(side=TOP, padx=5,pady=10)
+axis=options.get()
 pass_label = Label(root, text="Number of Drones", font = ('calibre',10,'normal'),)
 pass_label.pack()
-passw_entry=Entry(root, textvariable = var, font = ('calibre',10,'normal'),)
+passw_entry=Entry(root, textvariable = number_of_drones, font = ('calibre',10,'normal'),)
 passw_entry.pack()
 
 radiovalue = StringVar()

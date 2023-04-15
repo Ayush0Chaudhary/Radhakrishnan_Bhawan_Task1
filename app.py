@@ -3,6 +3,19 @@ import numpy as np
 import copy
 import pandas as pd
 import json 
+import tkinter.messagebox as alert
+from tkinter import *
+from tkinter import messagebox, filedialog, Menu
+from PIL import Image, ImageDraw, ImageGrab
+
+old_x, old_y = 0, 0
+pen_color = "black"
+bg_color = "white"
+number_of_drones = 80
+axis = "yz"
+created = []
+new = []
+created_element_info = []
 
 #Calculates area of triangle
 def areaoftri(p1, p2, p3):
@@ -246,7 +259,6 @@ def generate_coordinates(path,total_num_of_vertices,plane='xy',filename=None,hyp
     save(filename, all_coord,plane, img.shape)
 
     #Uncomment to display image
-    
     trialimage = np.zeros(img.shape[:-1],dtype=np.uint8) 
     finalimage = thresh.copy()
 
@@ -258,28 +270,279 @@ def generate_coordinates(path,total_num_of_vertices,plane='xy',filename=None,hyp
     cv2.imshow('sa', trialimage)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    
-    
+
+def updateCoordinates(event):
+    global old_x, old_y
+    print("Called!!!!")
+    old_x, old_y = event.x, event.y
+    print(old_x,old_y)
+
+def addLine(event):
+    global old_x, old_y
+    c.create_line((old_x, old_y, event.x, event.y), fill=pen_color)
+    old_x, old_y = event.x, event.y
+
+def upddateCoordinated(value):
+    global number_of_drones
+    number_of_drones = value
+
+def updateAxis(value):
+    global axis
+    axis = value
+
+def clearCanvas():
+    c.delete("all")
+
+#Works for whole frame
+# def exportAsImage():
+#     filename = filedialog.asksaveasfilename(defaultextension='.png', filetypes=[('PNG', '*.png'), ('JPEG', '*.jpg'), ('GIF', '*.gif')], title="Save the image as...")
+#     main_frame.update()
+#     x = root.winfo_rootx() + main_frame.winfo_x()
+#     y = root.winfo_rooty() + main_frame.winfo_y()
+#     width = main_frame.winfo_width()
+#     height = main_frame.winfo_height()
+
+#     img = ImageGrab.grab(bbox=(x, y, x+width, y+height))
+#     img.save(filename)
+#     print("Image saved as '{filename}")
+#     messagebox.showinfo("Export as image", f"Image exported successfully to '{filename}'")
 
 
-try:
-    #######
-    # Keep it within Try except block - Ek remark ka text field bana dena GUI mein
-    #  and usme exception ka message print karwa dena if any error occurs
-    #
-    # Ye implement kar dena as Text field as predefined values
-    #  
-    # input parameters
-    #File path
-    #Number of Vertices
-    #Name of file to be saved
-    #Plane
-    #hyp_area=0.2,
-    # delta=5
-    # eps=0.01
-    # eps_increment=0.005
-    generate_coordinates("pjuyu.png",50,filename="coordinates.txt",plane='yz',hyp_area=0.2,delta=5, eps=0.01,eps_increment=0.005)
-except: 
-    print("""Overcrowed -
-          1) Reduce the Number of points
-          2) Increase image size""")
+def createElms():
+    global shape, old_x,old_y
+    if shape == "Rectangle":
+        a = c.create_rectangle(old_x, old_y, x, y,activewidth=2,outline='black')
+    elif shape == "Oval":
+        print("Oval Called")
+        print(shape)
+        a = c.create_oval(old_x, old_y, x, y,activewidth=2,outline='black')
+    elif shape == "Polygan":
+        a = c.create_polygon(
+            old_x, old_y, x, y, old_x, old_y,activewidth=2,outline='black')
+    elif shape == "Arc":
+        a = c.create_arc(old_x, old_y, x, y,activewidth=2,outline='black')
+    elif shape == "Line":
+        a = c.create_line(old_x, old_y, x, y,
+                               width=2,activewidth=2,
+                               capstyle=ROUND, smooth=TRUE, splinesteps=3)
+    else:
+        c.create_line((old_x, old_y, x, y), fill=pen_color)
+        old_x, old_y = x, y  
+    return a
+
+def createLine(e=""):
+    global x, y, created, new , old_y,old_x
+    # line_width
+    # try:
+    print(old_y,old_x)
+    if e != "Get":
+        x = e.x
+        y = e.y
+    status.set(f"Position : x - {x} , y - {y}")
+    statusbar.update()
+    a = createElms()
+    if e != "Get":
+        created.append(a)
+        for item in created[:-1]:
+            c.delete(item)
+    # except Exception as e:
+    #     alert.showerror("Some Error Occurred!", e)
+
+def saveDrawing(e=""):
+    global created, shape, color
+    global created_element_info
+    
+    try:    
+        new.append(created[-1])
+    except IndexError:
+        pass
+    created = []
+    created_element_info_new = {
+        "type": shape,
+        "prev_x": old_x,
+        "prev_y": old_y,
+        "x": x,
+        "y": y
+    }
+    created_element_info.append(created_element_info_new)
+    # print(created_element_info)
+
+
+def shapechanger(e=""):
+    global shape
+    if shape is not radiovalue.get():
+        shape = radiovalue.get()
+    else:
+        shape = ""
+    print(shape)
+
+def captureMotion(e=""):
+    global x,y,old_x,old_y
+    status.set(f"Position : x - {e.x} , y - {e.y}")
+    # x = e.x
+    # y = e.y
+    # old_x = e.x
+    # old_y = e.y
+    statusbar.update()
+
+
+# << Trying for only white canvas , maybe putting it in seperate frame than mainframewill work >>
+# def exportAsImage():
+#     filename = filedialog.asksaveasfilename(defaultextension='.png', filetypes=[('PNG', '*.png'), ('JPEG', '*.jpg'), ('GIF', '*.gif')], title="Save the image as...")
+#     if filename:
+#         x, y, w, h = c.bbox("all")
+#         img = Image.new("RGBA", (w, h), bg_color)
+#         draw = ImageDraw.Draw(img)
+#         draw.rectangle((0, 0, w, h), fill=bg_color)
+#         draw.line([(x1 - x, y1 - y) for (x1, y1) in c.coords("all")], fill=pen_color, width=2)
+#         img.save(filename)
+#         messagebox.showinfo("Export as Image", f"Image saved as '{filename}'")
+
+def exportkarImage():
+    filename = filedialog.asksaveasfilename(defaultextension='.png', filetypes=[('PNG', '*.png'), ('JPEG', '*.jpg'), ('GIF', '*.gif')], title="Save the image as...")
+    main_frame.update()
+    x = root.winfo_rootx() + main_frame.winfo_x()
+    y = root.winfo_rooty() + main_frame.winfo_y()
+    width = main_frame.winfo_width()
+    height = main_frame.winfo_height()
+
+    img = Image.new("RGBA", (width, height), bg_color)
+    draw = ImageDraw.Draw(img)
+
+    # draw the white canvas
+    draw.rectangle((0, 0, width, height), fill=bg_color)
+
+    # draw the lines
+    for item in c.find_all():
+        if c.type(item) == "line":
+            coords = c.coords(item)
+            draw.line([(coords[i], coords[i+1]) for i in range(0, len(coords), 2)], fill=pen_color, width=2)
+
+        elif c.type(item) == "rectangle":
+            coords = c.coords(item)
+            draw.rectangle(coords, outline=pen_color, width=2)
+
+        elif c.type(item) == "oval":
+            coords = c.coords(item)
+            draw.ellipse(coords, outline=pen_color, width=2)
+
+        elif c.type(item) == "arc":
+            coords = c.coords(item)
+            draw.arc(coords, outline=pen_color, width=2)
+
+        elif c.type(item) == "polygon":
+            coords = c.coords(item)
+            draw.polygon(coords, outline=pen_color, width=2)
+
+    img = img.crop((x, y, x+width, y+height))
+    img.save(filename)
+    print(f"Image saved as '{filename}")
+    messagebox.showinfo("Export as image", f"Image exported successfully to '{filename}'")
+    
+    try:
+        print(number_of_drones)
+        print(axis)
+        generate_coordinates(filename,50,filename="coordinates.txt",plane='yz',hyp_area=0.2,delta=5, eps=0.01,eps_increment=0.005)
+    except: 
+        print("""Overcrowed -
+            1) Change the Number of points
+            2) Increase image size""")
+
+#Root Create + Setups
+root = Tk()
+root.title("Drawing Pad")
+root.minsize(600, 400)
+root.update() 
+
+width = root.winfo_width()  
+height = root.winfo_height()  
+
+# root.columnconfigure(0, weight=int(0.9*width))
+# root.rowconfigure(0, weight=int(0.9*height))
+
+main_frame = Frame(root)
+main_frame.pack(fill=BOTH, expand=True)
+
+button_frame = Frame(main_frame)
+button_frame.pack(side=RIGHT, padx=10, pady=10, fill=Y)
+
+#Canvas Create + Setup
+c = Canvas(main_frame,bg = "white")
+c.pack(side=LEFT, fill=BOTH, expand=True)
+c.itemconfig(c.find_all(), tags=("bg",))
+
+radiovalue = StringVar()
+radiovalue.set("Oval")
+shape = "Pencil"
+
+c.bind("<Button-1>", updateCoordinates)
+c.bind("<B1-Motion>", createLine)
+c.bind("<ButtonRelease-1>", saveDrawing)
+c.bind("<Motion>", captureMotion)
+
+#setting background color
+# bg_button = Button(button_frame, text="Pick background color", command=setBgColor)
+# bg_button.pack(side=TOP, padx=5, pady=10)
+
+#setting pen color
+# pen_button = Button(button_frame, text="Pick pen color", command=setPenColor)
+# pen_button.pack(side=TOP, padx=5, pady=10)
+
+#clear button
+clear_button = Button(button_frame, text="Clear Button", command=clearCanvas)
+clear_button.pack(side=TOP, padx=5, pady=10)
+
+#export as image button
+export_button = Button(button_frame, text="Export as Image", command=exportkarImage)
+export_button.pack(side=TOP, padx=5, pady=10)
+
+#export as image button
+# upload_button = Button(button_frame, text="Export as Image", command=exportkarImage)
+# upload_button.pack(side=TOP, padx=5, pady=10)
+
+options = [
+    "YZ",
+    "XY",
+    "ZX",
+]
+  
+# datatype of menu text
+clicked = StringVar()
+var = StringVar()
+  
+# initial menu text
+clicked.set( "YZ" )
+  
+
+# Create Dropdown menu
+pass_label = Label(main_frame, text="Update the axis", font = ('calibre',10,'normal'),)
+pass_label.pack()
+drop = OptionMenu( main_frame , clicked , *options )
+drop.pack(side=TOP, padx=5,pady=10)
+pass_label = Label(main_frame, text="Number of Drones", font = ('calibre',10,'normal'),)
+pass_label.pack()
+passw_entry=Entry(main_frame, textvariable = var, font = ('calibre',10,'normal'),)
+passw_entry.pack()
+
+radiovalue = StringVar()
+radiovalue.set("Oval")
+
+geometry_shapes = ["Pencil","Line", "Rectangle", "Arc", "Oval"]
+
+for shape in geometry_shapes:
+    radio = Radiobutton(main_frame, text=shape, variable=radiovalue, font="comicsans 12 bold",
+                        value=shape, command=shapechanger).pack( padx=6, pady=3)
+
+status = StringVar()
+status.set("Position : x - 0 , y - 0")
+statusbar = Label(root, textvariable=status, anchor="w", relief=SUNKEN)
+
+statusbar.pack(side=BOTTOM, fill=X)
+#Main Loop
+root.mainloop()
+
+
+
+
+
+    
