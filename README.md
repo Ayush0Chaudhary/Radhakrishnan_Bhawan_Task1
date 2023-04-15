@@ -31,6 +31,11 @@ python app.py
 <img src="bat.png" width="600"/>
 </p>
 
+To see the output simply uncomment the following code under the function generate_coordinates in app.py
+<p align="center">
+<img src="info.png" width="400"/>
+</p>
+
 ## Executables
 To run as standalone application
 ## .app in macOS
