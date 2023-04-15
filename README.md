@@ -5,7 +5,11 @@ Require python>=3.6
 ```
 pip install -r requirements.txt
 ```
-
+## Running as Script
+To run the program directly as a python script run the following command:(Executables files can also be developed as mentioned below)
+```
+python app.py
+```
 
 ## Executables
 To run as standalone application
