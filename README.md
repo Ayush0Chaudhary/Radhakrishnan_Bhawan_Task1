@@ -5,6 +5,9 @@ Require python>=3.6
 ```
 pip install -r requirements.txt
 ```
+## GUI
+<img src="gui.png" width="300"/>
+
 ## Running as Script
 To run the program directly as a python script run the following command:(Executables files can also be developed as mentioned below)
 ```
