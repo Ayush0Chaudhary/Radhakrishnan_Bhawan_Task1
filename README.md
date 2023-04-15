@@ -35,6 +35,7 @@ To see the output simply uncomment the following code under the function generat
 <p align="center">
 <img src="info.png" width="400"/>
 </p>
+After uncommenting to exit the windows press 'q' in keyboard.
 
 ## Executables
 To run as standalone application
