@@ -9,10 +9,14 @@ pip install -r requirements.txt
 <p align="center">
 <img src="gui.png" width="600"/>
  </p>
-Number of drones - Shall be provided as input 
+Number of drones - Shall be provided as input
+
 Plane - XY, YZ and ZX are available as mentione in PS
-Export as image - Exports the image and generates coordinate.txt file containing information about the coordinates of the drone. 
+
+Export as image - Exports the image and generates coordinate.txt file containing information about the coordinates of the drone.
+
                   Screen size is also mentioned as coordinates of drone can vary from screen size which can be normalized.
+                  
 Tools - Various drawing tools have been provided to draw shapes as well as insert button is provided to upload other image.
 
 ## Running as Script
