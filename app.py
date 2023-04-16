@@ -437,7 +437,7 @@ def exportkarImage():
             coords = c.coords(item)
             draw.polygon(coords, outline=pen_color, width=2)
 
-    img = img.crop((x, y, x+width, y+height))
+    img = img.crop((0, 0, width, height))
     img.save(filename)
     print(f"Image saved as '{filename}")
     messagebox.showinfo("Export as image", f"Image exported successfully to '{filename}'")
